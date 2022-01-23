@@ -6,7 +6,7 @@ declare function require(path: string): any
 import * as JSZip from 'jszip'
 import JSZipUtils from 'jszip-utils'
 import FileSaver from 'file-saver'
-
+import { convert } from 'svg-to-swiftui-core'
 const App = () => {
   // 保存svg
   const svgs = []
@@ -14,8 +14,9 @@ const App = () => {
   const downloadZip = async (svgs) => {
     const zip = new JSZip()
     for (const svg of svgs) {
-      const filename = `${svg.name}.svg`
-      zip.file(filename, svg.content)
+      const filename = `${svg.name}.swift`
+      const swiftuiStr = convert(svg.content) 
+      zip.file(filename, swiftuiStr)
     }
     await zip.generateAsync({ type: 'blob' })
       .then((blob) => {
