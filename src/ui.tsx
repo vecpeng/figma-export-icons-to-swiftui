@@ -11,12 +11,20 @@ const App = () => {
   // 保存svg
   const svgs = []
   // 将svg转换为文件并压缩到一个文件夹中
-  const downloadZip = async (svgs) => {
+  const downloadZip = async (svgs, svg) => {
     const zip = new JSZip()
-    for (const svg of svgs) {
-      const filename = `${svg.name}.swift`
-      const swiftuiStr = convert(svg.content) 
-      zip.file(filename, swiftuiStr)
+    console.log(svgs);
+    if (!svg) {
+      for (const svg of svgs) {
+        const filename = `${svg.name}.swift`
+        const swiftuiStr = convert(svg.content) 
+        zip.file(filename, swiftuiStr)
+      }
+    } else {
+      for (const svg of svgs) {
+        const filename = `${svg.name.replace("_", "")}.svg`
+        zip.file(filename, svg.content)
+      }
     }
     await zip.generateAsync({ type: 'blob' })
       .then((blob) => {
@@ -25,7 +33,10 @@ const App = () => {
   }
 
   const onDownload = () => {
-    downloadZip(svgs)
+    downloadZip(svgs, false)
+  }
+  const onDownloadSvg = () => {
+    downloadZip(svgs, true)
   }
 
   const onCancel = () => {
@@ -45,7 +56,8 @@ const App = () => {
       <h2>Rectangle Creator</h2>
       <p>Count: </p>
       <button onClick={onCancel}>Cancel</button>
-      <button id="create" onClick={onDownload}>Create</button>
+      <button id="create" onClick={onDownload}>Download SwiftUI</button>
+      <button id="create" onClick={onDownloadSvg}>Download svg</button>
     </div>
   )
 }
